@@ -1,0 +1,205 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Csharp
+{
+    public partial class Form1 : Form
+    {
+         class Memory_states {
+         public int hole_size, start_address ,state ; public string name_assigned ;
+         public Memory_states(int size , int start , int stat=0 , string name_assigned = "NULL") {
+             hole_size = size;
+             start_address = start;
+             state = stat;
+         }
+         }
+
+    class processes {
+        public string name;
+        public int size;
+        public processes(string n, int s) { name = n; size = s; }
+    }
+    List<processes> process = new List<processes>();
+    List<Memory_states> memory_holes = new List<Memory_states>();
+    static Bitmap image = new Bitmap(120, 1000);
+    Graphics g = Graphics.FromImage(image);
+       
+        public Form1()
+    {
+        
+            
+            InitializeComponent();
+        }
+
+        private void button_Click(object sender, EventArgs e)
+        {
+            string algorithm = way_allocate.Text;
+            string nameOfProcess = name_process.Text;
+            int sizeOfProcess = int.Parse(size_process.Text);
+            processes s1 = new processes(nameOfProcess, sizeOfProcess);
+            process.Add(s1);
+            if(algorithm=="F.F."){
+                List<Memory_states> SortedList = memory_holes.OrderBy(o => o.start_address).ToList();
+                memory_holes = SortedList;
+                for (int i = 0; i < memory_holes.Count();i++) {
+                    if (sizeOfProcess <= memory_holes[i].hole_size && memory_holes[i].state==0)
+                    {
+                        if(sizeOfProcess!=memory_holes[i].hole_size){
+                            Memory_states s2 = new Memory_states(memory_holes[i].hole_size-sizeOfProcess, memory_holes[i].start_address+sizeOfProcess);
+
+                            memory_holes.Add(s2);
+                            memory_holes[i].hole_size = sizeOfProcess;
+                        }
+                        memory_holes[i].state = 1;
+                        memory_holes[i].name_assigned = nameOfProcess;
+                        
+
+                        Font drawFont = new Font("Arial", 12);
+                        SolidBrush drawBrush = new SolidBrush(Color.White);
+                        int textX = 50, textY = ((memory_holes[i].start_address * 400) / 1000);
+
+                        g.FillRectangle(Brushes.Brown, 0, ((memory_holes[i].start_address * 400) / 1000), 120, ((memory_holes[i].hole_size * 400) / 1000));
+                        g.DrawString(nameOfProcess, drawFont, drawBrush, new Point(textX, textY));
+                        picture_processes.Image = image;
+                        break;
+                }
+                
+                }
+            }
+            else if (algorithm == "B.F.")
+            {
+                List<Memory_states> SortedList1 = memory_holes.OrderBy(o => o.start_address).ToList();
+                memory_holes = SortedList1;
+                int j = 0, minimumSize=0;
+                for (int i = 0; i < memory_holes.Count(); i++) { if (memory_holes[i].state == 0) { j = i; minimumSize = memory_holes[i].hole_size; } }
+                for (int i = 0; i < memory_holes.Count(); i++) {
+                    if (memory_holes[i].hole_size >= sizeOfProcess && minimumSize > memory_holes[i].hole_size && memory_holes[i].state == 0) { j = i; minimumSize = memory_holes[i].hole_size; }
+                }
+            if(memory_holes[j].hole_size>=sizeOfProcess){
+                if (sizeOfProcess != memory_holes[j].hole_size)
+                {
+                    Memory_states s3 = new Memory_states(memory_holes[j].hole_size - sizeOfProcess, memory_holes[j].start_address + sizeOfProcess);
+
+                    memory_holes.Add(s3);
+                    memory_holes[j].hole_size = sizeOfProcess;
+                }
+                memory_holes[j].state = 1;
+                memory_holes[j].name_assigned = nameOfProcess;
+
+
+                Font drawFont = new Font("Arial", 12);
+                SolidBrush drawBrush = new SolidBrush(Color.White);
+                int textX = 50, textY = ((memory_holes[j].start_address * 400) / 1000);
+
+                g.FillRectangle(Brushes.Brown, 0, ((memory_holes[j].start_address * 400) / 1000), 120, ((memory_holes[j].hole_size * 400) / 1000));
+                g.DrawString(nameOfProcess, drawFont, drawBrush, new Point(textX, textY));
+                picture_processes.Image = image;
+            
+            }
+            
+            
+            }
+
+
+
+        }
+
+        private void txt_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+     
+        private void ADD_Click(object sender, EventArgs e)
+        {
+            g.FillRectangle(Brushes.Black, 0, 0, 120, 400);
+            picture_processes.Image = image;
+           
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+        
+        private void add_process_Click(object sender, EventArgs e)
+        {
+            int holeSize = int.Parse(hole_size.Text);
+            int StartAddress = int.Parse(start_address.Text);
+            Font drawFont = new Font("Arial", 12);
+            SolidBrush drawBrush = new SolidBrush(Color.White);
+
+            int textX = 50, textY = ((StartAddress * 400) / 1000);
+
+            Memory_states s1 = new Memory_states(holeSize , StartAddress);
+          
+            memory_holes.Add(s1);
+            g.FillRectangle(Brushes.Aqua, 0, ((StartAddress * 400) / 1000), 120, ((holeSize * 400) / 1000));
+            g.DrawString(holeSize.ToString(), drawFont, drawBrush, new Point(textX, textY));
+            picture_processes.Image = image;
+           
+        }
+
+        private void picture_processes_Click(object sender, EventArgs e)
+        {
+          
+        }
+
+        private void Deallocate_Click(object sender, EventArgs e)
+        {
+            int size = memory_holes.Count();
+            List<Memory_states> SortedList2 = memory_holes.OrderBy(o => o.start_address).ToList();
+            memory_holes = SortedList2;
+            string nameOfprocess = NameOfProcessToDeallocate.Text;
+            for (int i = 0; i < memory_holes.Count();i++ ) {
+                if (memory_holes[i].name_assigned == nameOfprocess) { memory_holes[i].state = 0;
+                memory_holes[i].name_assigned= "NULL";
+
+                Font drawFont1 = new Font("Arial", 12);
+                SolidBrush drawBrush1 = new SolidBrush(Color.White);
+
+                int textX1 = 50, textY1 = ((memory_holes[i].start_address * 400) / 1000);
+
+                g.FillRectangle(Brushes.Aqua, 0, ((memory_holes[i].start_address * 400) / 1000), 120, ((memory_holes[i].hole_size * 400) / 1000));
+                g.DrawString(memory_holes[i].hole_size.ToString(), drawFont1, drawBrush1, new Point(textX1, textY1));
+                picture_processes.Image = image;
+
+                for (int j = 0; j < memory_holes.Count()-1;j++)
+                {
+
+                    if ((memory_holes[j].start_address + memory_holes[j].hole_size) == (memory_holes[j + 1].start_address) && (memory_holes[j + 1].state == 0) && (memory_holes[j].state == 0))
+                    {
+                        memory_holes[j].hole_size += memory_holes[j + 1].hole_size;
+                        memory_holes.RemoveAt(j + 1);
+                        size = memory_holes.Count();
+
+
+                        Font drawFont = new Font("Arial", 12);
+                        SolidBrush drawBrush = new SolidBrush(Color.White);
+
+                        int textX = 50, textY = ((memory_holes[j].start_address * 400) / 1000);
+
+                        g.FillRectangle(Brushes.Aqua, 0, ((memory_holes[j].start_address * 400) / 1000), 120, ((memory_holes[j].hole_size * 400) / 1000));
+                        g.DrawString(memory_holes[j].hole_size.ToString(), drawFont, drawBrush, new Point(textX, textY));
+                        picture_processes.Image = image;
+
+
+                    }
+                  
+                    
+                }
+
+           
+                }
+            
+            }
+
+        }
+    }
+}
