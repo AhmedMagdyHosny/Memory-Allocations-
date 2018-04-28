@@ -12,14 +12,12 @@ the initialize button .
 5) To press a button you have to enter all the values
 inside the text box beside it and the press the
 button
-6) The .exe file found in Csharp -> bin -> debug -
->Csharp.exe
-7) The aqua color means that this is a free space
+6) The aqua color means that this is a free space
 written on it the value of the free space
-8) The brown color means that a process has taken
+7) The brown color means that a process has taken
 this free space in memory and written on it the
 name of the process
-9) If you entered the same process more that one
+8) If you entered the same process more that one
 time to allocate space and you want to deallocate
 it you have to press deallocate button twice a
 time to deallocate this same process from all over
